@@ -9,8 +9,8 @@ fsBtn = [false, true, true, true, false, true, true, false,
          false, true, true, false, true, true, true, true];
 
 //Enable/disable farmer and fox button based on state.
-ffBtn = [false, true, false, true, true, true, true, false,
-         false, true, true, true, true, false, true, true];
+ffBtn = [false, true, false, true, true, true,  true, false,
+         false, true, true,  true, true, false, true, true];
 
 //Enable/disable farmer and chicken button based on state.
 fcBtn = [false, true,  false, true,  false, true,  false, true,
@@ -31,6 +31,7 @@ var gameMessages = ["<p><b>Safe move! Make another move</b></p>",
                     "<p><b>Oh no! The chicken ate the seeds! The game is over!</b></p>", 
                     "<p><b>Congratulations! The farmer has crossed the river! You won!</b></p>"];
 
+//Main variable that controls the game progression.
 var gameState = 0;
 
 function moveToState(buttonNum)
@@ -41,112 +42,85 @@ function moveToState(buttonNum)
             if(buttonNum == 0){gameState = 1;}
             else if(buttonNum == 1){gameState = 3;}
             else if(buttonNum == 2){gameState = 5;}
-            else{gameState = 9;}
+            else if(buttonNum == 3){gameState = 9;}
         break;
 
         case 1:
             if(buttonNum == 0){gamestate = 0;}
-            else if(buttonNum == 1){} //Invalid
-            else if(buttonNum == 2){} //Invalid
-            else{} //Invalid
         break;
 
         case 2:
             if(buttonNum == 0){gamestate = 3}
-            else if(buttonNum == 1){} //Invalid
             else if(buttonNum == 2){gameState = 7;} 
-            else{gameState = 11;}
+            else if(buttonNum == 3){gameState = 11;}
         break;
 
         case 3:
             if(buttonNum == 0){gameState = 2;}
             else if(buttonNum == 1){gameState = 0;}
-            else if(buttonNum == 2){} //Invalid
-            else{} //Invalid
         break;
 
         case 4:
             if(buttonNum == 0){gameState = 5;}
             else if(buttonNum == 1){gameState = 7;}
-            else if(buttonNum == 2){} //Invalid
-            else{gameState = 13;}
+            else if(buttonNum == 3){gameState = 13;}
         break;
 
         case 5:
             if(buttonNum == 0){gameState = 4;}
-            else if(buttonNum == 1){} //Invalid
             else if(buttonNum == 2){gameState = 0;}
-            else{} //Invalid
         break;
 
         case 6:
             if(buttonNum == 0){gameState = 7;}
-            else if(buttonNum == 1){} //Invalid
-            else if(buttonNum == 2){} //Invalid
-            else{gameState = 15;}
+            else if(buttonNum == 3){gameState = 15;}
         break;
 
         case 7:
             if(buttonNum == 0){gameState = 6;}
             else if(buttonNum == 1){gameState = 4;}
             else if(buttonNum == 2){gameState = 2;}
-            else{} //Invalid
         break;
 
         case 8:
             if(buttonNum == 0){gameState = 9;}
             else if(buttonNum == 1){gameState = 11;}
             else if(buttonNum == 2){gameState = 13;}
-            else{} //Invalid
         break;
 
         case 9:
             if(buttonNum == 0){gameState = 8;}
-            else if(buttonNum == 1){} //Invalid
-            else if(buttonNum == 2){} //Invalid
-            else{gameState = 0;}
+            else if(buttonNum == 3){gameState = 0;}
         break;
 
         case 10:
             if(buttonNum == 0){gameState = 11;}
-            else if(buttonNum == 1){} //Invalid
             else if(buttonNum == 2){gameState = 15;}
-            else{} //Invalid
         break;
 
         case 11:
             if(buttonNum == 0){gameState = 10;}
             else if(buttonNum == 1){gameState = 8;}
-            else if(buttonNum == 2){} //Invalid
-            else{gameState = 2;}
+            else if(buttonNum == 3){gameState = 2;}
         break;
 
         case 12:
             if(buttonNum == 0){gameState = 13;}
             else if(buttonNum == 1){gameState = 15;}
-            else if(buttonNum == 2){} //Invalid
-            else{} //Invalid
         break;
 
         case 13:
             if(buttonNum == 0){gameState = 12;}
-            else if(buttonNum == 1){} //Invalid
             else if(buttonNum == 2){gameState = 8;}
-            else{gameState = 4;}
+            else if(buttonNum == 3){gameState = 4;}
         break;
 
         case 14:
             if(buttonNum == 0){gameState = 15;}
-            else if(buttonNum == 1){} //Invalid
-            else if(buttonNum == 2){} //Invalid
-            else{} //Invalid
         break;
 
+        //Game over. Must reset.
         case 15:
-            if(buttonNum == 0){} //Game over. Must reset.
-            else if(buttonNum == 1){} //Game over. Must reset.
-            else if(buttonNum == 2){} //Game over. Must reset.
-            else{} //Game over. Must reset.
         break;
 
         //Invalid state.  Reset the game.
@@ -155,6 +129,7 @@ function moveToState(buttonNum)
         break;
     }
 
+    //Update all relevant images and buttons based on current game state.
     updateState();
 }
 
