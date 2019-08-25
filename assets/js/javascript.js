@@ -1,146 +1,57 @@
 
-//Enable/disable farmer only button based on state.
-foBtn = [false, true,  false, true,  false, true,  false, false,
-         false, false, true,  false, true,  false, true,  true];
+class State
+{
+    constructor(BtnNextStates, msgIndex, stateImg)
+    {
+        this.BtnNextStates = BtnNextStates;
+        this.msgIndex = msgIndex;
+        this.stateImg = stateImg;
+    }
+}
 
-
-//Enable/disable farmer and seeds button based on state.
-fsBtn = [false, true, true, true, false, true, true, false,
-         false, true, true, false, true, true, true, true];
-
-//Enable/disable farmer and fox button based on state.
-ffBtn = [false, true, false, true, true, true,  true, false,
-         false, true, true,  true, true, false, true, true];
-
-//Enable/disable farmer and chicken button based on state.
-fcBtn = [false, true,  false, true,  false, true,  false, true,
-         true,  false, true,  false, true,  false, true,  true];
-
-//Message to display based on current state.
-msgArr = [0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 2, 0, 1, 0, 1, 3];
-
-//Update image based on state.
-imgArr = ["state0.jpg",  "state1.jpg",  "state2.jpg",  "state3.jpg", 
-          "state4.jpg",  "state5.jpg",  "state6.jpg",  "state7.jpg",
-          "state8.jpg",  "state9.jpg",  "state10.jpg", "state11.jpg",
-          "state12.jpg", "state13.jpg", "state14.jpg", "state15.jpg"];
+statesArr =
+[
+    new State([ 1,  3,  5,  9], 0, "state0.jpg" ), //Initial state.
+    new State([-1, -1, -1, -1], 1, "state1.jpg" ), //Losing state.
+    new State([ 3, -1,  7, 11], 0, "state2.jpg" ),
+    new State([-1, -1, -1, -1], 1, "state3.jpg" ), //Losing state.
+    new State([ 5,  7, -1, 13], 0, "state4.jpg" ),
+    new State([-1, -1, -1, -1], 2, "state5.jpg" ), //Losing state.
+    new State([ 7, -1, -1, 15], 0, "state6.jpg" ),
+    new State([ 6,  4,  2, -1], 0, "state7.jpg" ),
+    new State([ 9, 11, 13, -1], 0, "state8.jpg" ),
+    new State([ 8, -1, -1,  0], 0, "state9.jpg" ),
+    new State([-1, -1, -1, -1], 2, "state10.jpg"), //Losing state.
+    new State([10,  8, -1,  2], 0, "state11.jpg"),
+    new State([-1, -1, -1, -1], 1, "state12.jpg"), //Losing state.
+    new State([12, -1,  8,  4], 0, "state13.jpg"),
+    new State([-1, -1, -1, -1], 1, "state14.jpg"), //Losing state.
+    new State([-1, -1, -1, -1], 3, "state15.jpg")  //Winning state.
+];
 
 //Possible game messages.
-var gameMessages = ["<p><b>Safe move! Make another move</b></p>",
-                    "<p><b>Oh no! The fox ate the chicken! The game is over!</b></p>", 
-                    "<p><b>Oh no! The chicken ate the seeds! The game is over!</b></p>", 
-                    "<p><b>Congratulations! The farmer has crossed the river! You won!</b></p>"];
+var gameMessages =
+[
+    "<p><b>Safe move! Make another move</b></p>",
+    "<p><b>Oh no! The fox ate the chicken! The game is over!</b></p>", 
+    "<p><b>Oh no! The chicken ate the seeds! The game is over!</b></p>", 
+    "<p><b>Congratulations! The farmer has crossed the river! You win!</b></p>",
+    "<p><b>Use the buttons above to select your next move</b></p>"
+];
 
 //Main variable that controls the game progression.
 var gameState = 0;
 
 function moveToState(buttonNum)
 {
-    switch(gameState)
-    {
-        case 0:
-            if(buttonNum == 0){gameState = 1;}
-            else if(buttonNum == 1){gameState = 3;}
-            else if(buttonNum == 2){gameState = 5;}
-            else if(buttonNum == 3){gameState = 9;}
-        break;
+    gameState = statesArr[gameState].BtnNextStates[buttonNum];
 
-        case 1:
-            if(buttonNum == 0){gamestate = 0;}
-        break;
-
-        case 2:
-            if(buttonNum == 0){gamestate = 3}
-            else if(buttonNum == 2){gameState = 7;} 
-            else if(buttonNum == 3){gameState = 11;}
-        break;
-
-        case 3:
-            if(buttonNum == 0){gameState = 2;}
-            else if(buttonNum == 1){gameState = 0;}
-        break;
-
-        case 4:
-            if(buttonNum == 0){gameState = 5;}
-            else if(buttonNum == 1){gameState = 7;}
-            else if(buttonNum == 3){gameState = 13;}
-        break;
-
-        case 5:
-            if(buttonNum == 0){gameState = 4;}
-            else if(buttonNum == 2){gameState = 0;}
-        break;
-
-        case 6:
-            if(buttonNum == 0){gameState = 7;}
-            else if(buttonNum == 3){gameState = 15;}
-        break;
-
-        case 7:
-            if(buttonNum == 0){gameState = 6;}
-            else if(buttonNum == 1){gameState = 4;}
-            else if(buttonNum == 2){gameState = 2;}
-        break;
-
-        case 8:
-            if(buttonNum == 0){gameState = 9;}
-            else if(buttonNum == 1){gameState = 11;}
-            else if(buttonNum == 2){gameState = 13;}
-        break;
-
-        case 9:
-            if(buttonNum == 0){gameState = 8;}
-            else if(buttonNum == 3){gameState = 0;}
-        break;
-
-        case 10:
-            if(buttonNum == 0){gameState = 11;}
-            else if(buttonNum == 2){gameState = 15;}
-        break;
-
-        case 11:
-            if(buttonNum == 0){gameState = 10;}
-            else if(buttonNum == 1){gameState = 8;}
-            else if(buttonNum == 3){gameState = 2;}
-        break;
-
-        case 12:
-            if(buttonNum == 0){gameState = 13;}
-            else if(buttonNum == 1){gameState = 15;}
-        break;
-
-        case 13:
-            if(buttonNum == 0){gameState = 12;}
-            else if(buttonNum == 2){gameState = 8;}
-            else if(buttonNum == 3){gameState = 4;}
-        break;
-
-        case 14:
-            if(buttonNum == 0){gameState = 15;}
-        break;
-
-        //Game over. Must reset.
-        case 15:
-        break;
-
-        //Invalid state.  Reset the game.
-        default:
-            resetGame();
-        break;
-    }
-
-    //Update all relevant images and buttons based on current game state.
-    updateState();
-}
-
-function updateState()
-{
-    document.getElementById("farmerOnlyBtn").disabled = foBtn[gameState];
-    document.getElementById("farmerAndSeedsBtn").disabled = fsBtn[gameState];
-    document.getElementById("farmerAndFoxBtn").disabled = ffBtn[gameState];
-    document.getElementById("farmerAndChknBtn").disabled = fcBtn[gameState];
-    document.getElementById("game-status-text").innerHTML = gameMessages[msgArr[gameState]];
-    document.getElementById("game-img").src = "assets/images/" + imgArr[gameState];
+    document.getElementById("farmerOnlyBtn").disabled = (statesArr[gameState].BtnNextStates[0] < 0);
+    document.getElementById("farmerAndSeedsBtn").disabled = (statesArr[gameState].BtnNextStates[1] < 0);
+    document.getElementById("farmerAndFoxBtn").disabled = (statesArr[gameState].BtnNextStates[2] < 0);
+    document.getElementById("farmerAndChknBtn").disabled = (statesArr[gameState].BtnNextStates[3] < 0);
+    document.getElementById("game-status-text").innerHTML = gameMessages[statesArr[gameState].msgIndex];
+    document.getElementById("game-img").src = "assets/images/" + statesArr[gameState].stateImg;
 }
 
 function resetGame()
@@ -150,6 +61,6 @@ function resetGame()
     document.getElementById("farmerAndSeedsBtn").disabled = false;
     document.getElementById("farmerAndFoxBtn").disabled = false;
     document.getElementById("farmerAndChknBtn").disabled = false;
-    document.getElementById("game-status-text").innerHTML = "<p><b>Use the buttons above to select your next move</b></p>";
+    document.getElementById("game-status-text").innerHTML = gameMessages[4];
     document.getElementById("game-img").src = "assets/images/state0.jpg";
 }
