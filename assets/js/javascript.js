@@ -98,6 +98,7 @@ function moveToState(buttonNum)
         dx = dx * -1;
     }
 
+    disableAllButtons();
     doAnimation = setInterval(animate, 10);
     animBtn = buttonNum;
 }
@@ -134,6 +135,7 @@ function updateState(buttonNum)
     updateImages();
 
     //Enable the proper buttons.
+    document.getElementById("farmerOnlyBtn").disabled = false;
     document.getElementById("farmerAndSeedsBtn").disabled = (isfarmerRight != isseedsRight);
     document.getElementById("farmerAndFoxBtn").disabled = (isfarmerRight != isfoxRight);
     document.getElementById("farmerAndChknBtn").disabled = (isfarmerRight != ischickenRight);
