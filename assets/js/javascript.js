@@ -17,6 +17,11 @@ var isseedsRight = false;
 var isfoxRight = false;
 var ischickenRight = false;
 
+//Variables used for animation.
+var animBtn;
+var doAnimation;
+var dx;
+
 //Possible game messages.
 var gameMessages =
 [
@@ -32,8 +37,73 @@ window.onload = function() {
     resetGame();
 };
 
-//Called everytime a button is clicked.  Advances the state of the game.
+function animate()
+{
+    //Get references to the ojbects that can be animated.
+    var imgFarmer = document.getElementById("img-farmer");
+    var imgBoat = document.getElementById("img-boat");
+    var imgSeeds = document.getElementById("img-seeds");
+    var imgFox = document.getElementById("img-fox");
+    var imgChicken = document.getElementById("img-chicken");
+
+    var imgBackground = document.getElementById("img-background");
+    var bkgHeightWidth = imgBackground.clientHeight / 1.0;
+    var itemHeightWidth = bkgHeightWidth / 4.7;
+    var itemSpacer = itemHeightWidth / 6;
+
+    //Calculate the extents of the animations.
+    var leftLimit = Math.floor(itemSpacer);
+    var rightLimit = Math.floor(bkgHeightWidth - itemSpacer - itemHeightWidth);
+    var farmerPos = parseInt(imgFarmer.style.left);
+   
+    //Check if the animation has reached the end.
+    if ((farmerPos < leftLimit) || (farmerPos > rightLimit))
+    {
+      clearInterval(doAnimation);
+      updateState(animBtn);
+    }
+    else  //Keep animating.
+    {
+        imgFarmer.style.left = farmerPos + dx + "px";
+        imgBoat.style.left = farmerPos + dx + "px";
+
+        if(animBtn == BTNSEEDS)
+        {
+            imgSeeds.style.left = farmerPos + dx + "px";
+        }
+        else if(animBtn == BTNFOX)
+        {
+            imgFox.style.left = farmerPos + dx + "px";
+        }
+        else if(animBtn == BTNCHKN)
+        {
+            imgChicken.style.left = farmerPos + dx + "px";
+        } 
+    }
+}
+
 function moveToState(buttonNum)
+{
+    //Get width/2 of the back ground for determining wich direction to animate.
+    var imgBackground = document.getElementById("img-background");
+    var midPoint = imgBackground.clientHeight / 2;
+
+    //Calculate dx per animation frame.
+    dx = imgBackground.clientWidth / 80;
+
+    //Check if moving from right to left.
+    var farmerObj = document.getElementById("img-farmer");
+    if(parseInt(farmerObj.style.left) > midPoint)
+    {
+        dx = dx * -1;
+    }
+
+    doAnimation = setInterval(animate, 10);
+    animBtn = buttonNum;
+}
+
+//Advances the state of the game.
+function updateState(buttonNum)
 {
     //Always toggle the farmer's river bank.
     isfarmerRight = !isfarmerRight;
