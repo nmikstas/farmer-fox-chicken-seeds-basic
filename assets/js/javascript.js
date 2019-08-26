@@ -168,6 +168,7 @@ function updateState(buttonNum)
 //Reset the game back to its initial state.
 function resetGame()
 {
+    clearInterval(doAnimation);
     isfarmerRight = isseedsRight = isfoxRight = ischickenRight = false;
     
     updateImages();
