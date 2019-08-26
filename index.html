@@ -12,7 +12,7 @@
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
 
-<body class="d-flex flex-column">
+<body class="d-flex flex-column" onresize="updateImages()" onload="updateImages()">
 
     <header class="header-class">The Farmer, Fox, Chicken and Seeds</header>
 
@@ -34,8 +34,17 @@
             </div>
 
             <div class="row">
+
                 <div class="col-md-6">
-                    <img class="img-fluid" src="assets/images/state0.jpg" alt="game image" id="game-img">
+                    <div class="img-container" id="img-container">
+                            
+                        <img class="img-fluid img-background" src="assets/images/river.jpg" alt="game image" id="img-background">
+                        <img class="img-fluid img-item" src ="assets/images/farmer.png" alt ="farmer image" id="img-farmer">
+                        <img class="img-fluid img-item" src ="assets/images/seeds.png" alt ="seeds image" id="img-seeds">
+                        <img class="img-fluid img-item" src ="assets/images/fox.png" alt ="fox image" id="img-fox">
+                        <img class="img-fluid img-item" src ="assets/images/chicken.png" alt ="chicken image" id="img-chicken">
+                        <img class="img-fluid img-item" src ="assets/images/boat.png" alt ="boat image" id="img-boat">
+                   </div>     
                 </div>
 
                 <div class="col-md-6">
@@ -50,7 +59,6 @@
                             <b>Use the buttons above to select your next move</b>
                         </p>
                     </div>
-
                     <input class="btn btn-danger select-btn" type="button" value="Reset Game" onclick="resetGame()">
                 </div>
             </div>

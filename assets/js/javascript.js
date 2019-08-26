@@ -5,6 +5,12 @@ const MSGCHKNEATSEED = 2;
 const MSGWIN         = 3;
 const MSGINTRO       = 4;
 
+//Bitwise AND constants for items and their state.
+const BITFARMER  = 1;
+const BITSEEDS   = 2;
+const BITFOX     = 4;
+const BITCHICKEN = 8;
+
 //Class that stores the next state and display messages for the current state.
 //BtnNextStates contains an array of 4 next possible states. -1 indicates an
 //invalid next state.  MsgIndex is the message to display for the current state.
@@ -56,27 +62,82 @@ var gameMessages =
 //Main variable that controls the game progression.
 var gameState = 0;
 
+//Initialize the game when the webpage is loaded. 
+window.onload = function() {
+    resetGame();
+};
+
+
 //Called everytime a button is clicked.  Advances the state of the game.
 function moveToState(buttonNum)
 {
     gameState = statesArr[gameState].BtnNextStates[buttonNum];
+    updateImages();
 
     document.getElementById("farmerOnlyBtn").disabled = (statesArr[gameState].BtnNextStates[0] < 0);
     document.getElementById("farmerAndSeedsBtn").disabled = (statesArr[gameState].BtnNextStates[1] < 0);
     document.getElementById("farmerAndFoxBtn").disabled = (statesArr[gameState].BtnNextStates[2] < 0);
     document.getElementById("farmerAndChknBtn").disabled = (statesArr[gameState].BtnNextStates[3] < 0);
     document.getElementById("game-status-text").innerHTML = gameMessages[statesArr[gameState].msgIndex];
-    document.getElementById("game-img").src = "assets/images/state" + gameState + ".jpg";
 }
 
 //Reset the game back to its initial state.
 function resetGame()
 {
     gameState = 0;
+    updateImages();
+    
     document.getElementById("farmerOnlyBtn").disabled = false;
     document.getElementById("farmerAndSeedsBtn").disabled = false;
     document.getElementById("farmerAndFoxBtn").disabled = false;
     document.getElementById("farmerAndChknBtn").disabled = false;
     document.getElementById("game-status-text").innerHTML = gameMessages[MSGINTRO];
-    document.getElementById("game-img").src = "assets/images/state0.jpg";
+}
+
+//This function moves and resizes all the images used in the game.
+function updateImages()
+{
+    var imgBackground = document.getElementById("img-background");
+    var bkgHeightWidth = imgBackground.clientHeight;
+
+    var imgContainer = document.getElementById("img-container");
+    imgContainer.style.height = bkgHeightWidth + "px";
+
+    var itemHeightWidth = bkgHeightWidth / 6;
+    var itemSpacer = itemHeightWidth / 6;
+
+    var imgFarmer = document.getElementById("img-farmer");
+    imgFarmer.style.height = itemHeightWidth + "px";
+    imgFarmer.style.top = itemSpacer + "px";
+
+    gameState & BITFARMER ? imgFarmer.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                            imgFarmer.style.left = itemSpacer + "px";
+
+    var imgSeeds = document.getElementById("img-seeds");
+    imgSeeds.style.height = itemHeightWidth + "px";
+    imgSeeds.style.top = 2 * itemSpacer + itemHeightWidth + "px";
+                        
+    gameState & BITSEEDS ? imgSeeds.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                           imgSeeds.style.left = itemSpacer + "px";
+
+    var imgFox = document.getElementById("img-fox");
+    imgFox.style.height = itemHeightWidth + "px";
+    imgFox.style.top = 3 * itemSpacer + 2 * itemHeightWidth + "px";
+                        
+    gameState & BITFOX ? imgFox.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                         imgFox.style.left = itemSpacer + "px";
+
+    var imgChicken = document.getElementById("img-chicken");
+    imgChicken.style.height = itemHeightWidth + "px";
+    imgChicken.style.top = 4 * itemSpacer + 3 * itemHeightWidth + "px";
+                                               
+    gameState & BITCHICKEN ? imgChicken.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                             imgChicken.style.left = itemSpacer + "px";
+
+    var imgBoat = document.getElementById("img-boat");
+    imgBoat.style.height = itemHeightWidth + "px";
+    imgBoat.style.top = 5 * itemSpacer + 4 * itemHeightWidth + "px";
+                                                                        
+    gameState & BITFARMER ? imgBoat.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                            imgBoat.style.left = itemSpacer + "px";
 }

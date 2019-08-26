@@ -56,3 +56,19 @@ p
     text-align: center;
     border: 2px solid #666666;
 }
+
+.img-container
+{
+    position: relative;
+}
+
+
+.img-background
+{
+    position: absolute;
+}
+
+.img-item
+{
+    position: absolute;
+}
