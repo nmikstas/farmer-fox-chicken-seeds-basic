@@ -5,49 +5,17 @@ const MSGCHKNEATSEED = 2;
 const MSGWIN         = 3;
 const MSGINTRO       = 4;
 
-//Bitwise AND constants for items and their state.
-const BITFARMER  = 1;
-const BITSEEDS   = 2;
-const BITFOX     = 4;
-const BITCHICKEN = 8;
+//Numbers assicated with user button presses.
+const BTNFARMER = 0;
+const BTNSEEDS  = 1;
+const BTNFOX    = 2;
+const BTNCHKN   = 3;
 
-//Class that stores the next state and display messages for the current state.
-//BtnNextStates contains an array of 4 next possible states. -1 indicates an
-//invalid next state.  MsgIndex is the message to display for the current state.
-class State
-{
-    constructor(BtnNextStates, msgIndex)
-    {
-        this.BtnNextStates = BtnNextStates;
-        this.msgIndex = msgIndex;
-    }
-}
-
-//The heart of the game.  There are a total of 16 states and the staesArr
-//contains all the information for moving between states.  The 4 elements
-//in each sub-array correspond to farmerOnlyBtn, farmerAndSeedsBtn, 
-//farmerAndFoxBtn and farmerAndChknBtn respectively.  The numbers in the
-//arrays indicate the next state index when the corresponding button
-//is clicked.
-statesArr =
-[
-    new State([ 1,  3,  5,  9], MSGSAFEMOVE)   , //Initial state.
-    new State([-1, -1, -1, -1], MSGFOXEATCHKN) , //Losing state.
-    new State([ 3, -1,  7, 11], MSGSAFEMOVE)   ,
-    new State([-1, -1, -1, -1], MSGFOXEATCHKN) , //Losing state.
-    new State([ 5,  7, -1, 13], MSGSAFEMOVE)   ,
-    new State([-1, -1, -1, -1], MSGCHKNEATSEED), //Losing state.
-    new State([ 7, -1, -1, 15], MSGSAFEMOVE)   ,
-    new State([ 6,  4,  2, -1], MSGSAFEMOVE)   ,
-    new State([ 9, 11, 13, -1], MSGSAFEMOVE)   ,
-    new State([ 8, -1, -1,  0], MSGSAFEMOVE)   ,
-    new State([-1, -1, -1, -1], MSGCHKNEATSEED), //Losing state.
-    new State([10,  8, -1,  2], MSGSAFEMOVE)   ,
-    new State([-1, -1, -1, -1], MSGFOXEATCHKN) , //Losing state.
-    new State([12, -1,  8,  4], MSGSAFEMOVE)   ,
-    new State([-1, -1, -1, -1], MSGFOXEATCHKN) , //Losing state.
-    new State([-1, -1, -1, -1], MSGWIN)          //Winning state.
-];
+//Position variable for each item. false=left river bank, true=right river bank.
+var isfarmerRight = false;
+var isseedsRight = false;
+var isfoxRight = false;
+var ischickenRight = false;
 
 //Possible game messages.
 var gameMessages =
@@ -59,32 +27,77 @@ var gameMessages =
     "<p><b>Use the buttons above to select your next move</b></p>"
 ];
 
-//Main variable that controls the game progression.
-var gameState = 0;
-
 //Initialize the game when the webpage is loaded. 
 window.onload = function() {
     resetGame();
 };
 
-
 //Called everytime a button is clicked.  Advances the state of the game.
 function moveToState(buttonNum)
 {
-    gameState = statesArr[gameState].BtnNextStates[buttonNum];
+    //Always toggle the farmer's river bank.
+    isfarmerRight = !isfarmerRight;
+
+    //Update river bank variables.
+    switch(buttonNum)
+    {
+        case BTNFARMER:
+            break;
+
+        case BTNSEEDS: 
+            isseedsRight = !isseedsRight;
+            break;
+
+        case BTNFOX:
+            isfoxRight = !isfoxRight;
+            break;
+
+        case BTNCHKN:
+            ischickenRight = !ischickenRight;
+            break;
+
+        default:
+            resetGame();
+            break;
+    }
+
     updateImages();
 
-    document.getElementById("farmerOnlyBtn").disabled = (statesArr[gameState].BtnNextStates[0] < 0);
-    document.getElementById("farmerAndSeedsBtn").disabled = (statesArr[gameState].BtnNextStates[1] < 0);
-    document.getElementById("farmerAndFoxBtn").disabled = (statesArr[gameState].BtnNextStates[2] < 0);
-    document.getElementById("farmerAndChknBtn").disabled = (statesArr[gameState].BtnNextStates[3] < 0);
-    document.getElementById("game-status-text").innerHTML = gameMessages[statesArr[gameState].msgIndex];
+    //Enable the proper buttons.
+    document.getElementById("farmerAndSeedsBtn").disabled = (isfarmerRight != isseedsRight);
+    document.getElementById("farmerAndFoxBtn").disabled = (isfarmerRight != isfoxRight);
+    document.getElementById("farmerAndChknBtn").disabled = (isfarmerRight != ischickenRight);
+   
+    //Check for winning state.
+    if(isfarmerRight && isseedsRight && isfoxRight && ischickenRight)
+    {
+        document.getElementById("game-status-text").innerHTML = gameMessages[MSGWIN];
+        disableAllButtons();
+    }
+    //Check if the fox ate the chicken.
+    else if((isfoxRight == ischickenRight) && (isfarmerRight != ischickenRight))
+    {
+        document.getElementById("game-status-text").innerHTML = gameMessages[MSGFOXEATCHKN];
+        disableAllButtons();
+    }
+    //Check if the chicken ate the seeds.
+    else if((ischickenRight == isseedsRight) && (isfarmerRight != ischickenRight))
+    {
+        document.getElementById("game-status-text").innerHTML = gameMessages[MSGCHKNEATSEED];
+        disableAllButtons();
+    }
+    //Must have been a safe move.
+    else
+    {
+        document.getElementById("game-status-text").innerHTML = gameMessages[MSGSAFEMOVE];
+    }
 }
 
 //Reset the game back to its initial state.
 function resetGame()
 {
-    gameState = 0;
+    isfarmerRight = isseedsRight = isfoxRight = ischickenRight = false;
+    
     updateImages();
     
     document.getElementById("farmerOnlyBtn").disabled = false;
@@ -94,50 +107,60 @@ function resetGame()
     document.getElementById("game-status-text").innerHTML = gameMessages[MSGINTRO];
 }
 
+//Disable all the buttons when the game is over.
+function disableAllButtons()
+{
+    document.getElementById("farmerOnlyBtn").disabled = true;
+    document.getElementById("farmerAndSeedsBtn").disabled = true;
+    document.getElementById("farmerAndFoxBtn").disabled = true;
+    document.getElementById("farmerAndChknBtn").disabled = true;
+}
+
 //This function moves and resizes all the images used in the game.
 function updateImages()
 {
     var imgBackground = document.getElementById("img-background");
     var bkgHeightWidth = imgBackground.clientHeight;
 
+    //This is required to make the website look right with the xs media query.
     var imgContainer = document.getElementById("img-container");
     imgContainer.style.height = bkgHeightWidth + "px";
 
-    var itemHeightWidth = bkgHeightWidth / 6;
+    var itemHeightWidth = bkgHeightWidth / 4.7;
     var itemSpacer = itemHeightWidth / 6;
 
     var imgFarmer = document.getElementById("img-farmer");
     imgFarmer.style.height = itemHeightWidth + "px";
     imgFarmer.style.top = itemSpacer + "px";
 
-    gameState & BITFARMER ? imgFarmer.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                            imgFarmer.style.left = itemSpacer + "px";
+    isfarmerRight ? imgFarmer.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                    imgFarmer.style.left = itemSpacer + "px";
 
     var imgSeeds = document.getElementById("img-seeds");
     imgSeeds.style.height = itemHeightWidth + "px";
-    imgSeeds.style.top = 2 * itemSpacer + itemHeightWidth + "px";
+    imgSeeds.style.top = 1 * itemSpacer + itemHeightWidth + "px";
                         
-    gameState & BITSEEDS ? imgSeeds.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                           imgSeeds.style.left = itemSpacer + "px";
+    isseedsRight ? imgSeeds.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                   imgSeeds.style.left = itemSpacer + "px";
 
     var imgFox = document.getElementById("img-fox");
     imgFox.style.height = itemHeightWidth + "px";
-    imgFox.style.top = 3 * itemSpacer + 2 * itemHeightWidth + "px";
+    imgFox.style.top = 0 * itemSpacer + 2 * itemHeightWidth + "px";
                         
-    gameState & BITFOX ? imgFox.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                         imgFox.style.left = itemSpacer + "px";
+    isfoxRight ? imgFox.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                 imgFox.style.left = itemSpacer + "px";
 
     var imgChicken = document.getElementById("img-chicken");
     imgChicken.style.height = itemHeightWidth + "px";
-    imgChicken.style.top = 4 * itemSpacer + 3 * itemHeightWidth + "px";
+    imgChicken.style.top = 0 * itemSpacer + 3 * itemHeightWidth + "px";
                                                
-    gameState & BITCHICKEN ? imgChicken.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                             imgChicken.style.left = itemSpacer + "px";
+    ischickenRight ? imgChicken.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                     imgChicken.style.left = itemSpacer + "px";
 
     var imgBoat = document.getElementById("img-boat");
     imgBoat.style.height = itemHeightWidth + "px";
-    imgBoat.style.top = 5 * itemSpacer + 4 * itemHeightWidth + "px";
+    imgBoat.style.top = 0 * itemSpacer + 3.7 * itemHeightWidth + "px";
                                                                         
-    gameState & BITFARMER ? imgBoat.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                            imgBoat.style.left = itemSpacer + "px";
+    isfarmerRight ? imgBoat.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+                    imgBoat.style.left = itemSpacer + "px";
 }
