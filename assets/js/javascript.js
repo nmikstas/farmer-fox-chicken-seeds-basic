@@ -22,6 +22,11 @@ var animBtn;     //Button clicked by user.  Determines what objects to animate.
 var doAnimation; //Animation interval variable.
 var dx;          //Distance to move animated object per frame.
 
+//Position and sizing variables.
+var bkgHeightWidth;
+var itemHeightWidth;
+var itemSpacer;
+
 //Possible game messages.
 var gameMessages =
 [
@@ -33,31 +38,22 @@ var gameMessages =
 ];
 
 //Initialize the game when the webpage is loaded. 
-window.onload = function() {
-    resetGame();
-};
+resetGame();
 
 function animate()
 {
-    //Get references to the ojbects that can be animated.
-    var imgFarmer = document.getElementById("img-farmer");
-    var imgBoat = document.getElementById("img-boat");
-    var imgSeeds = document.getElementById("img-seeds");
-    var imgFox = document.getElementById("img-fox");
-    var imgChicken = document.getElementById("img-chicken");
-
     //Animation takes the same amount of time no matter the size of the playing field.
     //These calculations are used to get the sizes of things and determine where the
     //stopping points are located.
-    var imgBackground = document.getElementById("img-background");
-    var bkgHeightWidth = imgBackground.clientHeight / 1.0;
+    var imgBackground   = document.getElementById("img-background");
+    var bkgHeightWidth  = imgBackground.clientHeight / 1.0;
     var itemHeightWidth = bkgHeightWidth / 4.7;
-    var itemSpacer = itemHeightWidth / 6;
+    var itemSpacer      = itemHeightWidth / 6;
 
     //Calculate the extents of the animations.
-    var leftLimit = Math.floor(itemSpacer);
+    var leftLimit  = Math.floor(itemSpacer);
     var rightLimit = Math.ceil(bkgHeightWidth - itemSpacer - itemHeightWidth);
-    var farmerPos = parseInt(imgFarmer.style.left);
+    var farmerPos  = parseInt(document.getElementById("img-farmer").style.left);
    
     //Check if the animation has reached the end.
     if ((farmerPos < leftLimit) || (farmerPos > rightLimit))
@@ -68,21 +64,21 @@ function animate()
     else //Keep animating.
     {
         //Always animate the farmer and the boat.
-        imgFarmer.style.left = farmerPos + dx + "px";
-        imgBoat.style.left = farmerPos + dx + "px";
+        document.getElementById("img-farmer").style.left = farmerPos + dx + "px";
+        document.getElementById("img-boat").style.left = farmerPos + dx + "px";
 
         //Check for any other necessary animations.
         if(animBtn == BTNSEEDS)
         {
-            imgSeeds.style.left = farmerPos + dx + "px";
+            document.getElementById("img-seeds").style.left = farmerPos + dx + "px";
         }
         else if(animBtn == BTNFOX)
         {
-            imgFox.style.left = farmerPos + dx + "px";
+            document.getElementById("img-fox").style.left = farmerPos + dx + "px";
         }
         else if(animBtn == BTNCHKN)
         {
-            imgChicken.style.left = farmerPos + dx + "px";
+            document.getElementById("img-chicken").style.left = farmerPos + dx + "px";
         } 
     }
 }
@@ -91,7 +87,7 @@ function moveToState(buttonNum)
 {
     //Get width/2 of the back ground for determining wich direction to animate.
     var imgBackground = document.getElementById("img-background");
-    var midPoint = imgBackground.clientHeight / 2;
+    var midPoint      = imgBackground.clientHeight / 2;
 
     //Calculate dx per animation frame.
     dx = imgBackground.clientWidth / 80;
@@ -103,9 +99,11 @@ function moveToState(buttonNum)
         dx *= -1;
     }
 
-    disableAllButtons(); //Disable buttons during animation to avoid weird behavior.
+    //Disable buttons during animation to avoid weird behavior.
+    setButtonsAndMessage(true, true, true, true, null);
+
     doAnimation = setInterval(animate, 10);
-    animBtn = buttonNum;
+    animBtn     = buttonNum;
 }
 
 //Advances the state of the game.
@@ -114,7 +112,7 @@ function updateState(buttonNum)
     //Always toggle the farmer's river bank variable.
     isfarmerRight = !isfarmerRight;
 
-    //Update river bank variables.  They alway toggle when the object is moved.
+    //Update river bank variables.  They always toggle when the object is moved.
     switch(buttonNum)
     {
         case BTNFARMER: //Already toggled above.
@@ -140,33 +138,23 @@ function updateState(buttonNum)
     updateImages(); //Place and size the images.
 
     //Enable the proper buttons.
-    document.getElementById("farmerOnlyBtn").disabled = false;
-    document.getElementById("farmerAndSeedsBtn").disabled = (isfarmerRight != isseedsRight);
-    document.getElementById("farmerAndFoxBtn").disabled = (isfarmerRight != isfoxRight);
-    document.getElementById("farmerAndChknBtn").disabled = (isfarmerRight != ischickenRight);
+    setButtonsAndMessage(false, isfarmerRight != isseedsRight, isfarmerRight != isfoxRight,
+        isfarmerRight != ischickenRight, MSGSAFEMOVE);
    
     //Check for winning state.
     if(isfarmerRight && isseedsRight && isfoxRight && ischickenRight)
     {
-        document.getElementById("game-status-text").innerHTML = gameMessages[MSGWIN];
-        disableAllButtons();
+        setButtonsAndMessage(true, true, true, true, MSGWIN);
     }
     //Check if the fox ate the chicken.
     else if((isfoxRight == ischickenRight) && (isfarmerRight != ischickenRight))
     {
-        document.getElementById("game-status-text").innerHTML = gameMessages[MSGFOXEATCHKN];
-        disableAllButtons();
+        setButtonsAndMessage(true, true, true, true, MSGFOXEATCHKN);
     }
     //Check if the chicken ate the seeds.
     else if((ischickenRight == isseedsRight) && (isfarmerRight != ischickenRight))
     {
-        document.getElementById("game-status-text").innerHTML = gameMessages[MSGCHKNEATSEED];
-        disableAllButtons();
-    }
-    //Must have been a safe move.
-    else
-    {
-        document.getElementById("game-status-text").innerHTML = gameMessages[MSGSAFEMOVE];
+        setButtonsAndMessage(true, true, true, true, MSGCHKNEATSEED);
     }
 }
 
@@ -177,80 +165,53 @@ function resetGame()
     isfarmerRight = isseedsRight = isfoxRight = ischickenRight = false;
     
     updateImages(); //Place and size the images.
-    
-    document.getElementById("farmerOnlyBtn").disabled = false;
-    document.getElementById("farmerAndSeedsBtn").disabled = false;
-    document.getElementById("farmerAndFoxBtn").disabled = false;
-    document.getElementById("farmerAndChknBtn").disabled = false;
-    document.getElementById("game-status-text").innerHTML = gameMessages[MSGINTRO];
+    setButtonsAndMessage(false, false, false, false, MSGINTRO);
 }
 
-//Disable all the buttons when the game is over or while animating.
-function disableAllButtons()
+//Enable buttons and display the specified message.
+function setButtonsAndMessage(farmerBtn, seedBtn, foxBtn, ChcknBtn, msgIndex)
 {
-    document.getElementById("farmerOnlyBtn").disabled = true;
-    document.getElementById("farmerAndSeedsBtn").disabled = true;
-    document.getElementById("farmerAndFoxBtn").disabled = true;
-    document.getElementById("farmerAndChknBtn").disabled = true;
+    document.getElementById("farmerOnlyBtn").disabled     = farmerBtn;
+    document.getElementById("farmerAndSeedsBtn").disabled = seedBtn;
+    document.getElementById("farmerAndFoxBtn").disabled   = foxBtn;
+    document.getElementById("farmerAndChknBtn").disabled  = ChcknBtn;
+
+    if(msgIndex != null)
+    {
+        document.getElementById("game-status-text").innerHTML = gameMessages[msgIndex];
+    }
 }
 
 //This function places and resizes all the images used in the game.
 function updateImages()
 {
     var imgBackground = document.getElementById("img-background");
-    var bkgHeightWidth = imgBackground.clientHeight;
+    bkgHeightWidth = imgBackground.clientHeight;
 
     //This is required to make the website look right with the xs media query.
     var imgContainer = document.getElementById("img-container");
     imgContainer.style.height = bkgHeightWidth + "px";
 
-    //These variables can be tweeked to change the
-    //size of the objects and the spacing between them.
-    var itemHeightWidth = bkgHeightWidth / 4.7;
-    var itemSpacer = itemHeightWidth / 6;
+    //tweek these variables to change the size of the objects and the spacing between them.
+    itemHeightWidth = bkgHeightWidth  / 4.7;
+    itemSpacer      = itemHeightWidth / 6;
 
-    //Set the farmer image size.
-    var imgFarmer = document.getElementById("img-farmer");
-    imgFarmer.style.height = itemHeightWidth + "px";
-    imgFarmer.style.top = itemSpacer + "px";
+    //Set the size and position of all the playing field objects.
+    setSizeAndPos(document.getElementById("img-farmer") , isfarmerRight , 1, 0);
+    setSizeAndPos(document.getElementById("img-seeds")  , isseedsRight  , 1, 1);
+    setSizeAndPos(document.getElementById("img-fox")    , isfoxRight    , 0, 2);
+    setSizeAndPos(document.getElementById("img-chicken"), ischickenRight, 0, 3);
+    setSizeAndPos(document.getElementById("img-boat")   , isfarmerRight , 0, 3.7);    
+}
 
-    //Set the farmer on the left or right river bank.
-    isfarmerRight ? imgFarmer.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                    imgFarmer.style.left = itemSpacer + "px";
+//This functiondoes all the calculations for each individual object in updateImages.
+function setSizeAndPos(image, isRight, spacerMult, spacerOffset)
+{
+    //Set the object image size.
+    image.style.height = itemHeightWidth + "px";
+    image.style.top = spacerMult * itemSpacer + spacerOffset * itemHeightWidth + "px";
 
-    //Set the seeds image size.
-    var imgSeeds = document.getElementById("img-seeds");
-    imgSeeds.style.height = itemHeightWidth + "px";
-    imgSeeds.style.top = 1 * itemSpacer + itemHeightWidth + "px";
-                        
-    //Set the seeds on the left or right river bank.
-    isseedsRight ? imgSeeds.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                   imgSeeds.style.left = itemSpacer + "px";
-
-    //Set the fox image size.
-    var imgFox = document.getElementById("img-fox");
-    imgFox.style.height = itemHeightWidth + "px";
-    imgFox.style.top = 0 * itemSpacer + 2 * itemHeightWidth + "px";
-                        
-    //Set the fox on the left or right river bank.
-    isfoxRight ? imgFox.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                 imgFox.style.left = itemSpacer + "px";
-
-    //Set the chicken image size.
-    var imgChicken = document.getElementById("img-chicken");
-    imgChicken.style.height = itemHeightWidth + "px";
-    imgChicken.style.top = 0 * itemSpacer + 3 * itemHeightWidth + "px";
-                                         
-    //Set the chicken on the left or right river bank.
-    ischickenRight ? imgChicken.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                     imgChicken.style.left = itemSpacer + "px";
-
-    //Set the boat image size.
-    var imgBoat = document.getElementById("img-boat");
-    imgBoat.style.height = itemHeightWidth + "px";
-    imgBoat.style.top = 0 * itemSpacer + 3.7 * itemHeightWidth + "px";
-                                               
-    //Set the boat on the left or right river bank.
-    isfarmerRight ? imgBoat.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
-                    imgBoat.style.left = itemSpacer + "px";
+    //Set the object on the left or right river bank.
+    isRight ? image.style.left = bkgHeightWidth - itemSpacer - itemHeightWidth + "px" :
+        image.style.left = itemSpacer + "px";
 }
