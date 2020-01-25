@@ -52,7 +52,7 @@ ul
 {
     font-family: Georgia, Times, serif;
     text-align: center;
-    background-color: rgba(30, 47, 126, 0.3);
+    background-image: linear-gradient(to right, rgba(109, 179, 242, .6), rgba(30, 47, 126, 0.3)), url('../images/noisy_net.png');
     color: #ffffff;
     font-size: 30px;
     border-bottom: 3px solid #666666;
@@ -84,7 +84,7 @@ ul
 footer
 {
     border-top: 1px solid #666666;
-    background-color: rgba(30, 47, 126, 0.3);
+    background-image: linear-gradient(to right, rgba(109, 179, 242, .6), rgba(30, 47, 126, 0.3)), url('../images/noisy_net.png');
     color: #ffffff;
 }
 
